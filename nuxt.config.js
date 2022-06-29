@@ -16,6 +16,12 @@ export default {
     ]
   },
 
+  serverMiddleware: process.env.NODE_ENV === 'production' ? [] : [
+    { path: 'webhooks', handler: '~/server/webhooks.ts'},
+    { path: 'api', handler: '~/server/api.ts'}
+  ],
+
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],
