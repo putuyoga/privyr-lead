@@ -52,10 +52,18 @@
             <p v-else>This lead has no other information</p>
           </div>
         </template>
+        <a
+          v-if="!loadingState.fetchMoreLeads && canLoadMore"
+          href="#"
+          @click="loadMoreLeads()"
+        >
+          load more
+        </a>
+        <span v-if="loadingState.fetchMoreLeads">fetching....</span>
       </template>
       <template v-else>
         <p>
-          This user doesn't have any lead saved. Insert new lead by make a
+          This user doesn't have any lead. Add new lead by make a
           <code style="color: green">curl</code> request to the webhook URL.
         </p>
       </template>
@@ -83,22 +91,19 @@ export default Vue.extend({
   async asyncData({ params, req }) {
     const userId = params.id
     const { data: leads, error } = await Service.getLeads(userId)
-
-    const host = process.server ? req.headers.host : window.location.host
-    if (error?.code === 404) return { userId, host }
+    if (error?.code === 404) return { userId }
 
     const webhookId = await Service.getWebhookId(userId)
-    const webhookUrl = `http://${host}/webhooks/${webhookId}`
-    return { host, userId, leads, webhookUrl }
+    const webhookUrl = `${Service.baseUrl}/webhooks/${webhookId}`
+    return { userId, leads, webhookUrl }
   },
 
   data: () => ({
     userId: 'empty',
-    leads: [],
-    host: '',
-    protocol: '',
+    leads: [] as Service.Lead[],
     webhookUrl: 'No Webhook URL. Click below link to generate.',
     rowExpand: {},
+    canLoadMore: true,
     loadingState: {
       regenerateWebhook: false,
       fetchMoreLeads: false,
@@ -110,12 +115,30 @@ export default Vue.extend({
       this.loadingState.regenerateWebhook = true
       try {
         const webhookId = await Service.requestNewWebhookId(this.userId)
-        this.webhookUrl = `http://${this.host}/webhooks/${webhookId}`
+        this.webhookUrl = `${Service.baseUrl}/webhooks/${webhookId}`
       } catch (error) {
         alert(`Error occured. Detail: ${error}`)
         this.webhookUrl = 'Failed to generate webhook URL, please try again'
       }
       this.loadingState.regenerateWebhook = false
+    },
+    async loadMoreLeads() {
+      if (!this.leads.length) return
+      this.loadingState.fetchMoreLeads = true
+      try {
+        const lastItem = this.leads[this.leads.length - 1]
+        const result = await Service.getLeads(this.userId, lastItem.createdAt)
+        if (result.data && result.data.length > 0) {
+          this.leads.push(...result.data)
+        } else {
+          this.canLoadMore = false
+        }
+      } catch (error) {
+        alert(`Error to load more leads. Detail: ${error}`)
+        // eslint-disable-next-line no-console
+        console.error(error)
+      }
+      this.loadingState.fetchMoreLeads = false
     },
     formatDate(timestamp: number) {
       const ms = 1000

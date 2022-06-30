@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import express from 'express'
 import firebase from 'firebase-admin'
+import joi from 'joi'
 import { nanoid } from 'nanoid'
 import admin from './service/database.js'
 import { errorJson, okJson } from './service/response'
@@ -16,6 +17,23 @@ const users = admin.firestore().collection('users')
  */
 app.get('/users/:userId/leads', async (request, response) => {
   const { userId } = request?.params || {}
+  const { after, limit = '4' } = request?.query || {}
+
+  const querySchema = joi
+    .object()
+    .keys({
+      after: joi.string().pattern(/^\d+?:\d+?$/),
+      limit: joi.number().min(1),
+    })
+    .optional()
+
+  const validationResult = querySchema.validate(request?.query)
+  if (validationResult?.error) {
+    return response.status(400).json({
+      message: validationResult?.error?.message || 'Invalid query parameters',
+      data: request?.query,
+    })
+  }
 
   const userSnapshot = await users.doc(userId).get()
 
@@ -25,11 +43,23 @@ app.get('/users/:userId/leads', async (request, response) => {
       .json({ message: `user with id '${userId}' does not exist` })
   }
 
-  const leadSnapshot = await users
+  const baseQuery = users
     .doc(userId)
     .collection('leads')
     .orderBy('createdAt', 'desc')
+
+  const timeCursor = (after as string)
+    ?.split(':')
+    .map((time) => Number.parseInt(time))
+
+  const timestamp = after
+    ? new firebase.firestore.Timestamp(...(timeCursor as [number, number]))
+    : null
+  const selectedQuery = after ? baseQuery.startAfter(timestamp) : baseQuery
+  const leadSnapshot = await selectedQuery
+    .limit(Number.parseInt(limit as string))
     .get()
+
   const leads = leadSnapshot.docs.map((doc) => doc.data())
 
   const result = okJson(leads)
