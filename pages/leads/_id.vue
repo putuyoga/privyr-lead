@@ -3,36 +3,51 @@
     <div class="webhook">
       <h2 class="webhook-title">Webhook URL</h2>
       <div class="webhook-url" @click="copyUrl()">
-        <div class="webhook-loading" v-if="loadingState.regenerateWebhook">
+        <div v-if="loadingState.regenerateWebhook" class="webhook-loading">
           Getting you a new URL, please wait...
         </div>
         <input v-else id="webhookUrl" disabled :value="webhookUrl" />
       </div>
       <p class="webhook-notice">
         This URL will listen to any incoming post request, and add lead data
-        into database.
+        into the database.
         <a href="#" @click="regenerateWebhookId()">Regenerate webhook url</a>
       </p>
     </div>
 
     <h2>Leads</h2>
-    <div class="div-table">
-      <div class="div-table-row table-head">
-        <div class="div-table-col">Name</div>
-        <div class="div-table-col">Email</div>
-        <div class="div-table-col">Phone</div>
+    <div class="table">
+      <div class="table-row table-head">
+        <div class="table-col">Name</div>
+        <div class="table-col">Email</div>
+        <div class="table-col">Phone</div>
       </div>
       <template v-if="leads.length > 0">
-        <div
-          v-for="(lead, num) in leads"
-          :key="lead.name"
-          class="div-table-row"
-          :class="{ even: num % 2 === 0 }"
-        >
-          <div class="div-table-col">{{ lead.name }}</div>
-          <div class="div-table-col">{{ lead.email }}</div>
-          <div class="div-table-col">{{ lead.phone }}</div>
-        </div>
+        <template v-for="(lead, num) in leads">
+          <div
+            :key="lead.name"
+            class="table-row"
+            :class="{ even: num % 2 === 0 }"
+            @click="$set(rowExpand, num, !rowExpand[num])"
+          >
+            <div class="table-col">{{ lead.name }}</div>
+            <div class="table-col">{{ lead.email }}</div>
+            <div class="table-col">{{ lead.phone }}</div>
+          </div>
+          <div
+            v-if="rowExpand[num]"
+            :key="`${lead.name}_detail`"
+            class="extra-detail"
+          >
+            <u>Other Information:</u>
+            <ul v-if="lead.other">
+              <li v-for="key in Object.keys(lead.other)" :key="key">
+                {{ key }}: {{ lead.other[key] }}
+              </li>
+            </ul>
+            <p v-else>This lead has no other information</p>
+          </div>
+        </template>
       </template>
       <template v-else>
         <p>
@@ -60,19 +75,25 @@ export default Vue.extend({
   /**
    * Retrieve user webhook URL and lead informations
    */
-  async asyncData({ params }) {
+  async asyncData({ params, req }) {
     const userId = params.id
     const { data: leads, error } = await Service.getLeads(userId)
-    if (error?.code === 404) return { userId }
+
+    const host = process.server ? req.headers.host : window.location.host
+    if (error?.code === 404) return { userId, host }
 
     const webhookId = await Service.getWebhookId(userId)
-    const webhookUrl = `http://localhost:3000/webhooks/${webhookId}`
-    return { userId, leads, webhookUrl }
+    const webhookUrl = `http://${host}/webhooks/${webhookId}`
+    return { host, userId, leads, webhookUrl }
   },
+
   data: () => ({
     userId: 'empty',
     leads: [],
+    host: '',
+    protocol: '',
     webhookUrl: 'No Webhook URL. Click below link to generate.',
+    rowExpand: {},
     loadingState: {
       regenerateWebhook: false,
       fetchMoreLeads: false,
@@ -92,7 +113,7 @@ export default Vue.extend({
       this.loadingState.regenerateWebhook = true
       try {
         const webhookId = await Service.requestNewWebhookId(this.userId)
-        this.webhookUrl = `http://localhost:3000/webhooks/${webhookId}`
+        this.webhookUrl = `http://${this.host}/webhooks/${webhookId}`
       } catch (error) {
         alert(`Error occured. Detail: ${error}`)
         this.webhookUrl = 'Failed to generate webhook URL, please try again'
@@ -150,7 +171,7 @@ export default Vue.extend({
   padding: 10px;
 }
 
-.div-table {
+.table {
   display: table;
   width: 100%;
   border: 1px solid #666666;
@@ -161,20 +182,39 @@ export default Vue.extend({
   font-weight: bold;
 }
 
-.div-table-row {
+.table-row {
   display: table-row;
   width: auto;
   clear: both;
   background-color: #eee;
 }
-.div-table-col {
+
+.table-row:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.extra-detail {
+  font-size: 12px;
+  padding: 4px;
+  background-color: #f7f0b6;
+}
+
+.table-col {
   padding: 4px;
   float: left; /* fix for  buggy browsers */
   display: table-column;
   width: 30%;
 }
 
-.div-table-row.even {
+.table-row.even {
   background-color: white;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  margin-top: 10px;
+  list-style: none;
 }
 </style>

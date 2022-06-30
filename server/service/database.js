@@ -1,7 +1,8 @@
 
 /**
- * TODO: should be stored in secure environment variables,
- * instead of hardcoded like these
+ * TODO: instead of hardcoded like these,
+ * should be stored in secure storage,
+ * like environment variables or similiar things such as AWS Parameter Store,
  */
 const firebase = require('firebase-admin')
 const admin = !firebase.apps.length

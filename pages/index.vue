@@ -1,6 +1,4 @@
-<template>
-  <Tutorial/>
-</template>
+<template><p>Privy Lead</p></template>
 
 <script lang="ts">
 import Vue from 'vue'
