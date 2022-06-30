@@ -45,7 +45,15 @@ Get the leads of the specific users
 
 **Method:** `GET`
 
-**Example Response**
+**Query Parameters**:
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| after | string | a cursor to load more specific leads after certain time. It's a firebase timestamp format of `seconds:nanoseconds` |
+| limit | number | how much the data being fetched |
+
+**Sample URL:** `https://privyr-lead.vercel.app/api/v1/users/123/leads?after=1656575698:214000000&limit=3`
+
+**Sample Response**
 
 ```
 {
@@ -119,7 +127,7 @@ It will allow users to have a new webhook ID and make the previous ID obsolete. 
 
 ---
 
-Each user will be able to generate a unique webhook url, which power one-way data sharing triggered by an event. It will enable the system to listen to any new incoming lead information and store it into database.
+Each user will be able to generate a unique webhook url, which power one-way data sharing triggered by an event. It will enable the system to listen to any new incoming lead information and store it into database. To obtain the webhook URL, one can access the user related page (ie. `https://privyr-lead.vercel.app/leads/123`)
 
 **URL:** `{baseUrl}/webhooks/:webhookId`
 
@@ -129,12 +137,12 @@ Each user will be able to generate a unique webhook url, which power one-way dat
 
 ---
 
-| Fields | Description                                                                                                         |
-| ------ | ------------------------------------------------------------------------------------------------------------------- |
-| name   | **Mandatory**. String. The name of the lead                                                                         |
-| email  | **Mandatory**. String. The email address                                                                            |
-| phone  | **Mandatory**. String. The phone number                                                                             |
-| other  | Optional. Object. Flexible object key pair, that should contain any other detail information that worth to be added |
+| Fields | Required? | Type   | Description                                                                                       |
+| ------ | --------- | ------ | ------------------------------------------------------------------------------------------------- |
+| name   | ✔️        | String | The name of the lead                                                                              |
+| email  | ✔️        | String | The email address                                                                                 |
+| phone  | ✔️        | String | The phone number                                                                                  |
+| other  |           | Object | Flexible object key pair, that should contain any other detail information that worth to be added |
 
 ### 3B. CURL request
 
@@ -160,7 +168,24 @@ curl --location --request POST 'https://privyr-lead.vercel.app/webhooks/y3qt3O1X
 
 ---
 
-- CSRF
-- Signature
-- Expiration
-- Rate Limit
+Several functionality that would be very good addition on top our system.
+
+### 1. IP Whitelist
+
+Only specific machine can send data into the webhook can prevent unauthorized access, and suitable for private usage of webhook.
+
+### 2. Secret Key
+
+Alternative of IP Whitelist, quite helpful to add additional security layer to make webhook more secure as long as the secret key isn't compromised.
+
+### 3. URL Expiration
+
+Suitable for temporary webhook usage, like doing test or just saving up some resource.
+
+### 4. Rate Limit
+
+This function help preventing flood request that can abuse the webhook usage. Also can be used as a subscription feature.
+
+### Webhook Logs
+
+To help debug, monitor, or audit any incoming webhook. The log can contain IP address, the URL of webhook, datetime, response code, payload and so on.

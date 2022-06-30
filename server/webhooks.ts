@@ -10,7 +10,7 @@ const app = express()
 /**
  * TODO:
  * We can add another middleware here,
- * to validate secret key being passed to the Auth header
+ * to validate secret key being passed into the authorization header
  */
 app.use((req, res, next) => {
   // JSON parsing validation
@@ -67,7 +67,7 @@ app.post('/:webhookId', async (request, response) => {
 
     // Insert the lead information to the database
     await insertLead({ webhookId: params.webhookId, body, userId: userDoc.id })
-    response.status(200).json({ body })
+    response.status(200).json({ success: true, data: body })
   } catch (error) {
     const message = `Unexpected error occured. Detail: ${error}`
     response.status(500).json({ success: false, message })
