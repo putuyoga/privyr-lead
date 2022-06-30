@@ -2,7 +2,7 @@
   <div class="page">
     <div class="webhook">
       <h2 class="webhook-title">Webhook URL</h2>
-      <div class="webhook-url" @click="copyUrl()">
+      <div class="webhook-url">
         <div v-if="loadingState.regenerateWebhook" class="webhook-loading">
           Getting you a new URL, please wait...
         </div>
@@ -21,6 +21,7 @@
         <div class="table-col">Name</div>
         <div class="table-col">Email</div>
         <div class="table-col">Phone</div>
+        <div class="table-col">Added Date</div>
       </div>
       <template v-if="leads.length > 0">
         <template v-for="(lead, num) in leads">
@@ -33,6 +34,9 @@
             <div class="table-col">{{ lead.name }}</div>
             <div class="table-col">{{ lead.email }}</div>
             <div class="table-col">{{ lead.phone }}</div>
+            <div class="table-col">
+              {{ formatDate(lead.createdAt._seconds) }}
+            </div>
           </div>
           <div
             v-if="rowExpand[num]"
@@ -61,6 +65,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import dayjs from 'dayjs'
 import * as Service from '~/service'
 
 export default Vue.extend({
@@ -101,14 +106,6 @@ export default Vue.extend({
   }),
 
   methods: {
-    copyUrl() {
-      const urlElement = document.getElementById('webhookUrl') as any
-      if (!urlElement) return
-      urlElement?.select()
-      urlElement?.setSelectionRange(0, 99999)
-      navigator.clipboard.writeText(urlElement.value)
-      alert('Copied the url to the clipboard')
-    },
     async regenerateWebhookId() {
       this.loadingState.regenerateWebhook = true
       try {
@@ -119,6 +116,10 @@ export default Vue.extend({
         this.webhookUrl = 'Failed to generate webhook URL, please try again'
       }
       this.loadingState.regenerateWebhook = false
+    },
+    formatDate(timestamp: number) {
+      const ms = 1000
+      return dayjs(timestamp * ms).format('DD-MM-YYYY HH:mm')
     },
   },
 })
@@ -204,7 +205,8 @@ export default Vue.extend({
   padding: 4px;
   float: left; /* fix for  buggy browsers */
   display: table-column;
-  width: 30%;
+  min-width: 20%;
+  max-width: 23%;
 }
 
 .table-row.even {

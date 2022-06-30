@@ -96,7 +96,7 @@ To obtain the identifier of webhook where it will be used as the webhook url par
 
 ---
 
-This will allow user to have new webhook ID and make the old ID obsolete. The webhook ID is randomly generated to make it hard to guess, so malicious user can't try to attempt to use the webhook.
+It will allow users to have a new webhook ID and make the previous ID obsolete. This will be useful for creating webhook for the first time, or when users want to deprecate the old webhook id in case it's being leaked or used maliciously.
 
 **URL:** `/api/users/:userId/webhook`
 
@@ -108,7 +108,6 @@ This will allow user to have new webhook ID and make the old ID obsolete. The we
 {
 	"success": true,
 	"data": {
-		"createdAt": {},
 		"webhookId": "FsOCGcVctYT6t5_7WnbUA"
 	}
 }
@@ -128,12 +127,12 @@ Each user will be able to generate a unique webhook url, which power one-day dat
 
 ---
 
-| Fields | Description                                                           |
-| ------ | --------------------------------------------------------------------- |
-| name   | **Mandatory**. String. The name of the lead                           |
-| email  | **Mandatory**. String. The email address                              |
-| phone  | **Mandatory**. String. The phone number                               |
-| other  | Optional. Object. Any other detail information that worth to be added |
+| Fields | Description                                                                                                         |
+| ------ | ------------------------------------------------------------------------------------------------------------------- |
+| name   | **Mandatory**. String. The name of the lead                                                                         |
+| email  | **Mandatory**. String. The email address                                                                            |
+| phone  | **Mandatory**. String. The phone number                                                                             |
+| other  | Optional. Object. Flexible object key pair, that should contain any other detail information that worth to be added |
 
 ### 3B. CURL request
 
