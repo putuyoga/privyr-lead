@@ -11,8 +11,11 @@ app.use(bodyParser.json())
 const schema = joi.object().keys({
   name: joi.string().min(2).required(),
   email: joi.string().email().required(),
-  phone: joi.string().required(),
-  other: joi.object().optional(),
+  phone: joi
+    .string()
+    .pattern(/^\+?\d+$/)
+    .required(),
+  other: joi.object().optional().min(1),
 })
 
 const users = admin.firestore().collection('users')
@@ -27,7 +30,10 @@ app.post('/:webhookId', async (request, response) => {
   const userDoc = userSnapshot.docs[0]
 
   // If the webhook id doesn't belong to any user
-  if (!userDoc.exists) return response.status(404)
+  if (!userDoc) {
+    const message = 'Webhook does not exist'
+    return response.status(404).json({ message })
+  }
 
   // Validate the payload fields based on the defined schema
   const validationResult = schema.validate(body)
