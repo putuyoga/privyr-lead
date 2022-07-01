@@ -59,7 +59,7 @@ Get the leads of the specific users
 ```
 {
   "success": true,
-  "body": [
+  "data": [
     {
       "email": "markus@victor.com",
       "webhookId": "umP2KXAhrhakNfA8UVoSg",
@@ -160,7 +160,7 @@ It will enable the system to listen to any new incoming lead information and sto
 This is sample `curl` request that can be used to test the webhook.
 
 ```bash
-curl --location --request POST 'https://privyr-lead.vercel.app/webhooks/y3qt3O1X5f4w8n3Qvi3uK' \
+curl --location --request POST 'https://privyr-lead.vercel.app/webhooks/KO7ckXGXvFkxbbmomR94M' \
 		--header 'Content-Type: application/json' \
 		--data-raw '{	"name": "Mario Pozo",
 									"email": "pozo@mario.com",
