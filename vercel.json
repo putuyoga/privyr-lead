@@ -22,7 +22,7 @@
     },
     {
       "src": "/webhooks",
-      "dest": "/server/webhook.ts",
+      "dest": "/server/webhooks.ts",
       "methods": ["POST"],
       "headers": {
         "Access-Control-Allow-Methods": "POST",
