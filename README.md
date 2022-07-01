@@ -24,8 +24,6 @@ $ yarn start
 
 ## 1. Directory Structures
 
----
-
 ### `/servers`
 
 The directory contains server backend code which responsible manage the API and webhooks.
@@ -35,8 +33,6 @@ The directory contains server backend code which responsible manage the API and 
 This directory contains the frontend views and routes.
 
 ## 2. API Documentation
-
----
 
 The backend expose several `REST API` endpoints that enable the frontend side to manage webhook and lead data.
 
@@ -137,8 +133,6 @@ It will allow users to have a new webhook ID and make the previous ID obsolete. 
 ```
 
 ## 3. Webhook
-
----
 
 Each user will be able to generate a unique webhook url, which power one-way data sharing triggered by an external source.
 
