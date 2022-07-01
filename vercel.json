@@ -17,7 +17,7 @@
     },
     {
       "source": "/webhooks",
-      "destination": "/server/webhooks.ts"
+      "destination": "/server/webhooks"
     }
   ]
 }

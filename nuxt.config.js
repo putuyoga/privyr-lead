@@ -17,8 +17,8 @@ export default {
   },
 
   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : [
-    { path: 'webhooks', handler: '~/server/webhooks.ts'},
-    { path: 'api/v1', handler: '~/server/api.ts'}
+    { handler: '~/server/webhooks/index.ts'},
+    { handler: '~/server/api.ts'}
   ],
 
 
