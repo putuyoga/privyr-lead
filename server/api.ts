@@ -15,7 +15,7 @@ const users = admin.firestore().collection('users')
  * Get all of the user's leads
  * Including the query pagination to load more lead data
  */
-app.get('/users/:userId/leads', async (request, response) => {
+app.get('/api/v1/users/:userId/leads', async (request, response) => {
   const { userId } = request?.params || {}
   const { after, limit = '4' } = request?.query || {}
 
@@ -70,7 +70,7 @@ app.get('/users/:userId/leads', async (request, response) => {
  * Get user's webhook id
  * The ID will be used as the unique identifier for user's webhook url
  */
-app.get('/users/:userId/webhook', async (request, response) => {
+app.get('/api/v1/users/:userId/webhook', async (request, response) => {
   const { userId } = request?.params || {}
   try {
     const snapshot = await users.doc(userId).get()
@@ -93,7 +93,7 @@ app.get('/users/:userId/webhook', async (request, response) => {
  * Create or regenerate user's webhook link ID,
  * Webhook ID will be unique and randomly generated to avoid guessed by unauthorized actor
  */
-app.put('/users/:userId/webhook', async (request, response) => {
+app.put('/api/v1/users/:userId/webhook', async (request, response) => {
   const { userId } = request?.params || {}
   try {
     // It will generate secure and yet random id
