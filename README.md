@@ -1,6 +1,11 @@
 # privyr-lead
 
-![Imgur](https://i.imgur.com/Dx2vQgg.png)
+![Imgur](https://i.imgur.com/1ZNY2vP.png)
+
+## Prequisite
+
+- Yarn 1.22.5
+- NodeJS v14.17.0
 
 ## Build Setup
 
@@ -57,29 +62,37 @@ Get the leads of the specific users
 
 ```
 {
-	"success": true,
-	"body": [
-		{
-			"email": "markus@victor.com",
-			"webhookId": "umP2KXAhrhakNfA8UVoSg",
-			"name": "John",
-			"phone": "0812341232",
-			"other": {
-				"address": "Midway street 25th",
-				"source": "Facebook"
-			}
-		},
-		{
-			"name": "Markus Isakson",
-			"webhookId": "uSFDSD22345fgDFo23",
-			"email": "markus@victor.com",
-			"phone": "+1241241",
-			"other": {
-				"referral": "Xavier",
-				"source": "Whatsapp"
-			}
-		},
-	]
+  "success": true,
+  "body": [
+    {
+      "email": "markus@victor.com",
+      "webhookId": "umP2KXAhrhakNfA8UVoSg",
+      "name": "John",
+      "phone": "0812341232",
+      "other": {
+        "address": "Midway street 25th",
+        "source": "Facebook"
+      },
+      "createdAt": {
+        "_seconds": 1656645132,
+        "_nanoseconds": 517000000
+      }
+    },
+    {
+      "name": "Markus Isakson",
+      "webhookId": "uSFDSD22345fgDFo23",
+      "email": "markus@victor.com",
+      "phone": "+1241241",
+      "other": {
+        "referral": "Xavier",
+        "source": "Whatsapp"
+      },
+      "createdAt": {
+        "_seconds": 1656597415,
+        "_nanoseconds": 218000000
+      },
+    },
+  ]
 }
 ```
 
@@ -97,8 +110,8 @@ To obtain the identifier of webhook where it will be used as the webhook url par
 
 ```
 {
-	"success": true,
-	"data": "umP2KXAhrhakNfA8UVoSg"
+  "success": true,
+  "data": "umP2KXAhrhakNfA8UVoSg"
 }
 ```
 
@@ -116,10 +129,10 @@ It will allow users to have a new webhook ID and make the previous ID obsolete. 
 
 ```
 {
-	"success": true,
-	"data": {
-		"webhookId": "FsOCGcVctYT6t5_7WnbUA"
-	}
+  "success": true,
+  "data": {
+    "webhookId": "FsOCGcVctYT6t5_7WnbUA"
+  }
 }
 ```
 
@@ -127,7 +140,9 @@ It will allow users to have a new webhook ID and make the previous ID obsolete. 
 
 ---
 
-Each user will be able to generate a unique webhook url, which power one-way data sharing triggered by an event. It will enable the system to listen to any new incoming lead information and store it into database. To obtain the webhook URL, one can access the user related page (ie. `https://privyr-lead.vercel.app/leads/123`)
+Each user will be able to generate a unique webhook url, which power one-way data sharing triggered by an external source.
+
+It will enable the system to listen to any new incoming lead information and store it into database. To obtain the webhook URL, one can access the user related page (ie. `https://privyr-lead.vercel.app/leads/123`)
 
 **URL:** `{baseUrl}/webhooks/:webhookId`
 
@@ -148,7 +163,7 @@ Each user will be able to generate a unique webhook url, which power one-way dat
 
 ---
 
-Here is the sample request using a curl
+This is sample `curl` request that can be used to test the webhook.
 
 ```bash
 curl --location --request POST 'https://privyr-lead.vercel.app/webhooks/y3qt3O1X5f4w8n3Qvi3uK' \
@@ -186,6 +201,10 @@ Suitable for temporary webhook usage, like doing test or just saving up some res
 
 This function help preventing flood request that can abuse the webhook usage. Also can be used as a subscription feature.
 
-### Webhook Logs
+### 5. Webhook Logs
 
 To help debug, monitor, or audit any incoming webhook. The log can contain IP address, the URL of webhook, datetime, response code, payload and so on.
+
+### 6. Notification
+
+Sometimes the webhook is not working as usual, any repeated errors occured when send a request to the webhook can trigger a notification alert to notify the webhook owner. The medium can be email, slack or even text message.

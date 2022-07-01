@@ -88,7 +88,7 @@ export default Vue.extend({
   /**
    * Retrieve user webhook URL and lead informations
    */
-  async asyncData({ params, req }) {
+  async asyncData({ params }) {
     const userId = params.id
     const { data: leads, error } = await Service.getLeads(userId)
     if (error?.code === 404) return { userId }
@@ -149,6 +149,10 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+/**
+ * TODO: Clean up and migrate it to SCSS
+ * Also some love for responsive layout?
+ */
 .webhook {
   max-width: 400px;
   margin-bottom: 10px;
@@ -199,7 +203,7 @@ export default Vue.extend({
   display: table;
   width: 100%;
   border: 1px solid #666666;
-  border-spacing: 5px; /* cellspacing:poor IE support for  this */
+  border-spacing: 5px;
 }
 
 .table-head {
@@ -226,7 +230,7 @@ export default Vue.extend({
 
 .table-col {
   padding: 4px;
-  float: left; /* fix for  buggy browsers */
+  float: left;
   display: table-column;
   min-width: 20%;
   max-width: 23%;
