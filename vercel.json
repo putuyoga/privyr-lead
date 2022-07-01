@@ -16,7 +16,7 @@
       "destination": "/server/api.ts"
     },
     {
-      "source": "/webhooks",
+      "source": "/webhooks/(.*)",
       "destination": "/server/webhooks/index.ts"
     }
   ]
